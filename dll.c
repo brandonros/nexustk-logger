@@ -5,6 +5,7 @@
 void init_console() {
   AllocConsole();
   freopen("CONOUT$", "w", stdout);
+  freopen("CONOUT$", "w", stderr);
   printf("DLL loaded!\n");
 }
 
