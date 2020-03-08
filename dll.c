@@ -5,6 +5,7 @@
 
 void init_console() {
   AllocConsole();
+  freopen("CONIN$", "r", stdin);
   freopen("CONOUT$", "w", stdout);
   freopen("CONOUT$", "w", stderr);
   printf("DLL loaded!\n");
@@ -42,24 +43,33 @@ DWORD write_payload() {
   uint32_t src = PATCH_SRC;
   uint32_t dest = PATCH_SRC + 0x05;
   uint32_t diff;
+  // get handle
   hProcess = get_handle();
   if (!hProcess) {
+    fprintf(stderr, "Unable to get handle.");
+    getchar();
     return 1;
   }
+  // allocate memory
   mem = VirtualAllocEx(hProcess, NULL, sizeof(asm_payload), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
   if (!mem) {
     fprintf(stderr, "Unable to allocate memory.");
+    getchar();
     return 1;
   }
+  // get dump address
   dump_addr = GetProcAddress(GetModuleHandle("nexustk-logger.dll"), "dump");
   if (!dump_addr) {
     fprintf(stderr, "Unable to get address of dump function.");
+    getchar();
     return 1;
   }
+  // write jump
   diff = (unsigned int)mem - src - 5;
   memcpy(jmp_payload + 1, &diff, 4);
   WriteProcessMemory(hProcess, (LPVOID)src, jmp_payload, sizeof(jmp_payload), NULL);
   printf("send -> dump jump written at %p\n\n", src);
+  // write payload
   memcpy(asm_payload + 11, &dump_addr, 4);
   diff = dest - ((unsigned int)mem + 0x1C) - 5;
   memcpy(asm_payload + 29, &diff, 4);
