@@ -1,5 +1,7 @@
+#include <windows.h>
 #include <psapi.h>
 #include <string.h>
+#include <stdio.h>
 
 int cmp_process_name(DWORD processID, const char *targetName) {
   HANDLE hProcess;

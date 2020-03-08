@@ -37,8 +37,8 @@ DWORD write_payload() {
     0x90 /* nop */
   };
   unsigned int src = PATCH_SRC;
-  unsigned int dest = PATCH_DEST;
-  LPVOID dump_addr = GetProcAddress(GetModuleHandle("nexustk.dll"), "dump");
+  unsigned int dest = PATCH_SRC + 0x05;
+  LPVOID dump_addr = GetProcAddress(GetModuleHandle("nexustk-logger.dll"), "dump");
   unsigned int diff;
   hProcess = get_handle();
   if (!hProcess) {

@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   DWORD processID;
   HANDLE hProcess;
   LPVOID mem;
-  const char path[] = "nexustk.dll";
+  const char path[] = "nexustk-logger.dll";
   processID = find_process_id("NexusTK.exe");
   if (!processID) {
     fprintf(stderr, "Unable to find process.");
