@@ -90,7 +90,7 @@ uint32_t calculate_relative_address(uint32_t from, uint32_t to) {
   return from - to - 0x05;
 }
 
-DWORD write_payload() {
+void write_payload() {
   HANDLE hProcess;
   LPVOID code_cave;
   LPVOID dump_addr;
@@ -99,30 +99,35 @@ DWORD write_payload() {
   // get handle
   hProcess = get_handle();
   if (!hProcess) {
-    fprintf(stderr, "Unable to get handle.");
+    fprintf(stderr, "Unable to get handle.\n");
     getchar();
-    return 1;
+    return;
   }
+  printf("Got handle.\n");
   // allocate memory
   code_cave = VirtualAllocEx(hProcess, NULL, LOG_AND_JMP_BACK_PAYLOAD_SIZE, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
   if (!code_cave) {
-    fprintf(stderr, "Unable to allocate memory.");
+    fprintf(stderr, "Unable to allocate memory.\n");
     getchar();
-    return 1;
+    return;
   }
+  printf("Allocated code cave memory at %p.\n", code_cave);
   // get dump address
   dump_addr = GetProcAddress(GetModuleHandle("nexustk-logger.dll"), "dump");
   if (!dump_addr) {
-    fprintf(stderr, "Unable to get address of dump function.");
+    fprintf(stderr, "Unable to get address of dump function.\n");
     getchar();
-    return 1;
+    return;
   }
+  printf("Got address of dump function.\n");
+  // build payloads
   jmp_to_log_payload = build_jmp_to_log_payload(calculate_relative_address(code_cave, PATCH_SRC));
   log_and_jmp_back_payload = build_log_and_jmp_back_payload(dump_addr, calculate_relative_address(PATCH_SRC + 0x05, code_cave + 0x1F));
+  printf("Built payloads.\n");
+  // write payloads
   WriteProcessMemory(hProcess, (LPVOID)PATCH_SRC, jmp_to_log_payload, ORIGINAL_INSTRUCTIONS_SIZE, NULL);
   WriteProcessMemory(hProcess, code_cave, log_and_jmp_back_payload, LOG_AND_JMP_BACK_PAYLOAD_SIZE, NULL);
-  printf("Payload written at %p\n\n", code_cave);
-  return 0;
+  printf("Payloads written\n");
 }
 
 BOOL WINAPI DllMain(HINSTANCE hInstDll, DWORD dwReason, LPVOID lpvReserved) {

@@ -38,12 +38,12 @@ HANDLE get_handle() {
   HANDLE hProcess;
   processID = find_process_id("NexusTK.exe");
   if (!processID) {
-    fprintf(stderr, "Unable to find process.");
+    fprintf(stderr, "Unable to find process.\n");
     return NULL;
   }
   hProcess = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_QUERY_INFORMATION | PROCESS_VM_WRITE | PROCESS_CREATE_THREAD, FALSE, processID);
   if (!hProcess) {
-    fprintf(stderr, "Unable to open process.");
+    fprintf(stderr, "Unable to open process.\n");
     return NULL;
   }
   return hProcess;

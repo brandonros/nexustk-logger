@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   // find process ID
   processID = find_process_id("NexusTK.exe");
   if (!processID) {
-    fprintf(stderr, "Unable to find process.");
+    fprintf(stderr, "Unable to find process.\n");
     getchar();
     return 1;
   }
@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
   // open process
   hProcess = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_QUERY_INFORMATION | PROCESS_VM_WRITE | PROCESS_CREATE_THREAD, FALSE, processID);
   if (!hProcess) {
-    fprintf(stderr, "Unable to open process.");
+    fprintf(stderr, "Unable to open process.\n");
     getchar();
     return 1;
   }
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   // allocate memory
   mem = VirtualAllocEx(hProcess, NULL, strlen(path), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
   if (!mem) {
-    fprintf(stderr, "Unable to allocate memory.");
+    fprintf(stderr, "Unable to allocate memory.\n");
     getchar();
     return 1;
   }
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
   // find LoadLibraryA address
   libAddr = (LPVOID)GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
   if (!libAddr) {
-    fprintf(stderr, "Unable to get library address.");
+    fprintf(stderr, "Unable to get library address.\n");
     getchar();
     return 1;
   }
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
   // create remote thread
   remoteThread = (LPVOID)CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)libAddr, mem, 0, NULL);
   if (!remoteThread) {
-    fprintf(stderr, "Unable to create remote thread.");
+    fprintf(stderr, "Unable to create remote thread.\n");
     getchar();
     return 1;
   }
