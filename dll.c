@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include "process.h"
 
-#define JMP_TO_LOG_PAYLOAD_SIZE ORIGINAL_INSTRUCTIONS_SIZE
-#define LOG_AND_JMP_BACK_PAYLOAD_SIZE 36
+#define LOG_AND_JMP_BACK_PAYLOAD_SIZE 0x1B + ORIGINAL_INSTRUCTIONS_SIZE
 
 void init_console() {
   AllocConsole();
@@ -31,12 +30,12 @@ uint8_t *build_log_and_jmp_back_payload(uint32_t dump_addr, uint32_t ret_addr) {
   payload[index++] = 0x60;
   /* pushf */
   payload[index++] = 0x9C;
-  /* push DWORD PTR [esp+0x28] (arg1) */
+  /* push DWORD PTR [arg1] */
   payload[index++] = 0xFF,
   payload[index++] = 0x74;
   payload[index++] = 0x24;
   payload[index++] = ARG_1_STACK_OFFSET + 0x20;
-  /* push DWORD PTR [esp+0x30] (arg2) */
+  /* push DWORD PTR [arg2] */
   payload[index++] = 0xFF;
   payload[index++] = 0x74;
   payload[index++] = 0x24;
@@ -120,7 +119,7 @@ DWORD write_payload() {
   }
   jmp_to_log_payload = build_jmp_to_log_payload(calculate_relative_address(code_cave, PATCH_SRC));
   log_and_jmp_back_payload = build_log_and_jmp_back_payload(dump_addr, calculate_relative_address(PATCH_SRC + 0x05, code_cave + 0x1F));
-  WriteProcessMemory(hProcess, (LPVOID)PATCH_SRC, jmp_to_log_payload, JMP_TO_LOG_PAYLOAD_SIZE, NULL);
+  WriteProcessMemory(hProcess, (LPVOID)PATCH_SRC, jmp_to_log_payload, ORIGINAL_INSTRUCTIONS_SIZE, NULL);
   WriteProcessMemory(hProcess, code_cave, log_and_jmp_back_payload, LOG_AND_JMP_BACK_PAYLOAD_SIZE, NULL);
   printf("Payload written at %p\n\n", code_cave);
   return 0;
