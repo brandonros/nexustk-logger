@@ -4,9 +4,8 @@
 #include <stdlib.h>
 #include "process.h"
 
-#define JMP_TO_LOG_PAYLOAD_SIZE 9
+#define JMP_TO_LOG_PAYLOAD_SIZE ORIGINAL_INSTRUCTIONS_SIZE
 #define LOG_AND_JMP_BACK_PAYLOAD_SIZE 36
-#define NUM_ORIGINAL_BYTES_REPLACED 9
 
 void init_console() {
   AllocConsole();
@@ -32,17 +31,17 @@ uint8_t *build_log_and_jmp_back_payload(uint32_t dump_addr, uint32_t ret_addr) {
   payload[index++] = 0x60;
   /* pushf */
   payload[index++] = 0x9C;
-  /* push DWORD PTR [esp+0x28] */
+  /* push DWORD PTR [esp+0x28] (arg1) */
   payload[index++] = 0xFF,
   payload[index++] = 0x74;
   payload[index++] = 0x24;
-  payload[index++] = 0x28;
-  /* push DWORD PTR [esp+0x30] */
+  payload[index++] = ARG_1_STACK_OFFSET + 0x20;
+  /* push DWORD PTR [esp+0x30] (arg2) */
   payload[index++] = 0xFF;
   payload[index++] = 0x74;
   payload[index++] = 0x24;
-  payload[index++] = 0x30;
-  /* mov eax, 0x00000000; address gets replaced dynamically later */
+  payload[index++] = ARG_2_STACK_OFFSET + 0x20 + sizeof(uint32_t);
+  /* mov eax, dump_addr */
   payload[index++] = 0xB8;
   payload[index++] = dump_addr & 0xFF;
   payload[index++] = (dump_addr >> 8) & 0xFF;
@@ -54,25 +53,16 @@ uint8_t *build_log_and_jmp_back_payload(uint32_t dump_addr, uint32_t ret_addr) {
   /* add esp, 0x08 */
   payload[index++] = 0x83;
   payload[index++] = 0xC4;
-  payload[index++] = 0x08;
+  payload[index++] = NUM_ARGS * sizeof(uint32_t);
   /* popf */
   payload[index++] = 0x9D;
   /* popd */
   payload[index++] = 0x61;
-  // operations destroyed by jmp replacing
-  /* push ebp */
-  payload[index++] = 0x55;
-  /* mov ebp, esp */
-  payload[index++] = 0x8B;
-  payload[index++] = 0xEC;
-  /* sub esp, 0x164 */
-  payload[index++] = 0x81;
-  payload[index++] = 0xEC;
-  payload[index++] = 0x64,
-  payload[index++] = 0x01;
-  payload[index++] = 0x00;
-  payload[index++] = 0x00;
-  /* jmp 0x00000000; relative address gets replaced dynamically later */
+  /* original payload */
+  for (int i = 0; i < ORIGINAL_INSTRUCTIONS_SIZE; ++i) {
+    payload[index++] = original_instructions[i];
+  }
+  /* jmp ret_addr */
   payload[index++] = 0xE9;
   payload[index++] = ret_addr & 0xFF;
   payload[index++] = (ret_addr >> 8) & 0xFF;
@@ -82,19 +72,18 @@ uint8_t *build_log_and_jmp_back_payload(uint32_t dump_addr, uint32_t ret_addr) {
 }
 
 uint8_t *build_jmp_to_log_payload(uint32_t code_cave_addr) {
-  uint8_t *payload = malloc(JMP_TO_LOG_PAYLOAD_SIZE);
+  uint8_t *payload = malloc(ORIGINAL_INSTRUCTIONS_SIZE);
   uint32_t index = 0;
-  /* jmp 0x00000000; relative address gets replaced dynamically later */
+  /* jmp code_cave_addr */
   payload[index++] = 0xE9;
   payload[index++] = code_cave_addr & 0xFF;
   payload[index++] = (code_cave_addr >> 8) & 0xFF;
   payload[index++] = (code_cave_addr >> 16) & 0xFF;
   payload[index++] = (code_cave_addr >> 24) & 0xFF;
   /* nop padding */
-  payload[index++] = 0x90;
-  payload[index++] = 0x90;
-  payload[index++] = 0x90;
-  payload[index++] = 0x90;
+  for (int i = index + 1; i <= ORIGINAL_INSTRUCTIONS_SIZE; ++i) {
+    payload[index++] = 0x90;
+  }
   return payload;
 }
 
