@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
   LPVOID libAddr;
   HANDLE remoteThread;
   LPVOID mem;
-  const char path[] = "C:\\Windows\\System32\\nexustk-logger.dll";
+  const char path[] = "C:\\Program Files (x86)\\KRU\\NexusTK\\nexustk-logger.dll";
   // find process ID
   processID = find_process_id("NexusTK.exe");
   if (!processID) {
