@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   }
   printf("Got NexusTK.exe process handle.\n");
   // allocate memory
-  mem = VirtualAllocEx(hProcess, NULL, strlen(path), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+  mem = VirtualAllocEx(hProcess, NULL, strlen(path) + 1, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
   if (!mem) {
     fprintf(stderr, "Unable to allocate memory.\n");
     getchar();
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
   }
   printf("Allocated memory.\n");
   // write DLL path
-  WriteProcessMemory(hProcess, mem, path, strlen(path), NULL);
+  WriteProcessMemory(hProcess, mem, path, strlen(path) + 1, NULL);
   printf("Wrote DLL path to memory.\n");
   // find LoadLibraryA address
   libAddr = (LPVOID)GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
