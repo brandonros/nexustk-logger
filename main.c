@@ -55,6 +55,17 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   printf("Spawned remote thread.\n");
+  // wait
+  WaitForSingleObject(remoteThread, INFINITE);
+  printf("Remote thread ended.\n");
+  // get exit code
+  DWORD exitCode = 0;
+  if (GetExitCodeThread(remoteThread, &exitCode) == 0) {
+    fprintf(stderr, "Unable to get exit code thread.\n");
+    getchar();
+    return 1;
+  }
+  printf("exitCode = %d\n", exitCode);
   // cleanup
   CloseHandle(hProcess);
   printf("Closed handle.\n");
