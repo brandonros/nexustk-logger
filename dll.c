@@ -136,6 +136,20 @@ BOOL WINAPI DllMain(HINSTANCE hInstDll, DWORD dwReason, LPVOID lpvReserved) {
       init_console();
       dump(0, NULL); /* make compiler not get rid of dead code */
       write_payload();
+      system("pause");
+      break;
+    }
+    case DLL_PROCESS_DETACH: {
+      printf("DLL_PROCESS_DETACH\n");
+      system("pause");
+      break;
+    }
+    case DLL_THREAD_ATTACH: {
+      printf("DLL_THREAD_ATTACH\n");
+      break;
+    }
+    case DLL_THREAD_DETACH: {
+      printf("DLL_THREAD_DETACH\n");
       break;
     }
   }
