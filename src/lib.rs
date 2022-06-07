@@ -27,12 +27,12 @@ fn our_cryptOutgoingPacket(this: *const c_void, input: *const u8, input_size: u1
   unsafe { CryptOutgoingPacketHook.enable().unwrap() };
 }
 
-fn our_cryptIncomingPacket(input: *const u8, packet_size: usize, output: *const u8, unk2: usize) -> usize {
-  print!("our_cryptIncomingPacket: input = {:p} packet_size = {} output = {:p} unk2 = {} ", input, packet_size, output, unk2);
+fn our_cryptIncomingPacket(input: *const u8, packet_size: usize, output: *const u8, crypt_type: usize) -> usize {
+  print!("our_cryptIncomingPacket: input = {:p} packet_size = {} output = {:p} crypt_type = {} ", input, packet_size, output, crypt_type);
   let input_slice = unsafe { std::slice::from_raw_parts(input, packet_size as usize) };
   let output_slice = unsafe { std::slice::from_raw_parts(output, packet_size as usize) };
   unsafe { CryptIncomingPacketHook.disable().unwrap() };
-  let ret_val = unsafe { CryptIncomingPacketHook.call(input, packet_size, output, unk2) };
+  let ret_val = unsafe { CryptIncomingPacketHook.call(input, packet_size, output, crypt_type) };
   unsafe { CryptIncomingPacketHook.enable().unwrap() };
   for i in 0..packet_size as usize {
     print!("{:02x}", output_slice[i]);
