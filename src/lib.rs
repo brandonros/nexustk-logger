@@ -49,11 +49,11 @@ pub extern "system" fn DllMain(dll_module: HINSTANCE, call_reason: DWORD, reserv
     unsafe { winapi::um::consoleapi::AllocConsole() };
     println!("Initializing...");
     // outgoing
-    let client_cryptOutgoingPacket: FnCryptOutgoingPacket = unsafe { std::mem::transmute(0x00576660) };
+    let client_cryptOutgoingPacket: FnCryptOutgoingPacket = unsafe { std::mem::transmute(0x00576660) }; // 2022-06-07: 752 client
     unsafe { CryptOutgoingPacketHook.initialize(client_cryptOutgoingPacket, our_cryptOutgoingPacket).unwrap() };
     unsafe { CryptOutgoingPacketHook.enable().unwrap() };
     // incoming
-    let client_cryptIncomingPacket: FnCryptIncomingPacket = unsafe { std::mem::transmute(0x00578b20) };
+    let client_cryptIncomingPacket: FnCryptIncomingPacket = unsafe { std::mem::transmute(0x00578b20) }; // 2022-06-07: 752 client
     unsafe { CryptIncomingPacketHook.initialize(client_cryptIncomingPacket, our_cryptIncomingPacket).unwrap() };
     unsafe { CryptIncomingPacketHook.enable().unwrap() };
   }
