@@ -4,7 +4,7 @@ version = "0.0.1"
 edition = "2018"
 
 [dependencies]
-winapi = "0.3.9"
+winapi = { version = "0.3.9", features = ["consoleapi"] }
 detour = "0.8.1"
 
 [lib]
