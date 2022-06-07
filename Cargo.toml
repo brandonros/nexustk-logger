@@ -1,0 +1,13 @@
+[package]
+name = "nexustk-rs"
+version = "0.0.1"
+edition = "2018"
+
+[dependencies]
+winapi = { version = "0.3.9", features = ["consoleapi"] }
+detour = "0.8.1"
+
+[lib]
+crate-type = ["cdylib"]
+name = "nexustk_rs"
+path = "src/lib.rs"
