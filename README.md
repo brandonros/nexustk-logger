@@ -1,6 +1,6 @@
 # nexustk-logger
 
-Dynamic hooking functions to log outgoing, unencrypted Nexus: The Kingdom of Wind packets
+Dynamic hooking functions to log outgoing + incoming unencrypted Nexus: The Kingdom of Wind packets
 
 ## How to use
 
