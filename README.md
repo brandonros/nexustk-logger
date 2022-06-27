@@ -4,7 +4,7 @@ Dynamic hooking functions to log outgoing + incoming unencrypted Nexus: The King
 
 ## How to build
 
-1. `cargo +nightly-i686-pc-windows-msvc build`
+1. `cargo build`
 
 ## How to use
 
