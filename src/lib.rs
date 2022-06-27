@@ -1,5 +1,3 @@
-// cargo +nightly-i686-pc-windows-msvc build
-
 #![feature(abi_thiscall)]
 
 use std::ffi::c_void;
