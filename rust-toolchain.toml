@@ -1,2 +1,4 @@
 [toolchain]
+channel = "nightly"
+components = ["rust-std"]
 targets = ["i686-pc-windows-msvc"]
